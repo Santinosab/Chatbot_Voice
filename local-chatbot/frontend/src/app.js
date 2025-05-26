@@ -11,7 +11,7 @@ function App() {
     setMessages((prev) => [...prev, userMessage]);
 
     try {
-      const response = await axios.post("http://localhost:8000/chat", { message: msg });
+      const response = await axios.post("http://192.168.42.78:8000/chat", { message: msg });
       const botText = response.data.response;
       const botMessage = { from: "bot", text: botText };
       setMessages((prev) => [...prev, botMessage]);
