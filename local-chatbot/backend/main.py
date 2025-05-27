@@ -3,6 +3,7 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from transformers import pipeline, Conversation
+import torch  # Import PyTorch to check for GPU availability
 
 app = FastAPI()
 
@@ -15,8 +16,11 @@ app.add_middleware(
     allow_headers=["*"],           # permite todas las cabeceras
 )
 
-# Carga el modelo de chat
-chatbot = pipeline("conversational", model="facebook/blenderbot-400M-distill")
+# Verifica si hay una GPU disponible
+device = 0 if torch.cuda.is_available() else -1  # 0 for GPU, -1 for CPU
+
+# Carga el modelo de chat en el dispositivo adecuado
+chatbot = pipeline("conversational", model="facebook/blenderbot-3B", device=device)
 
 @app.post("/chat")
 async def chat(request: Request):
@@ -27,4 +31,4 @@ async def chat(request: Request):
     return {"response": response.generated_responses[-1]}
 
 # Para ejecutar:
-# uvicorn backend.main:app --reload
+# uvicorn backend.main:app --reloads
